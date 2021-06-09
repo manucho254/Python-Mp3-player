@@ -360,7 +360,6 @@ class Player:
         self.label_time.place(x=460, y=387)
 
 #=================================Tk window function==========================================#
-threaded = []
 
 def main():
     root = Tk()
