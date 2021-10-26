@@ -139,7 +139,6 @@ class Player:
 
         def playAll():
             try:
-                global index
                 index = 0
                 for i in range(size):
                     self.play_list.select_clear(0, END)
@@ -156,7 +155,6 @@ class Player:
                     song_timer = MP3(song)
                     song_length = int(song_timer.info.length) * 1000
                     get_time()
-                    time.sleep(song_length)
                     index += 1      
             except:
                 showerror("No songs in playlist", "Please add music")
