@@ -1,17 +1,17 @@
-from ensurepip import bootstrap
 from tkinter import (
     Tk,HORIZONTAL,Label,Button,
-    END,PhotoImage,Scrollbar,Listbox,
-    LEFT,StringVar,Menu,Toplevel, Scale,
+    END,PhotoImage,Listbox,
+    LEFT,StringVar,Menu,Toplevel,
     ACTIVE,BOTH,TOP
     )
 from tkinter.filedialog import askdirectory
-import os
-import threading
 from tkinter.messagebox import showerror,askquestion,showinfo
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.icons import Emoji
+
+import os
+import threading
 import time
 
 from PIL import Image, ImageTk
@@ -132,7 +132,7 @@ class Player(ttk.Frame):
         try:
             track = self.play_list.get(ACTIVE)
             pygame.mixer.music.load(track)
-            self.var.set(track)
+            self.var.set(str(track).split(".")[0])
             pygame.mixer.music.play()
             self.get_time()
         except:
@@ -155,7 +155,7 @@ class Player(ttk.Frame):
             self.play_list.selection_anchor(CURRENT_SONG_INDEX)
             track = self.play_list.get(CURRENT_SONG_INDEX)
             pygame.mixer.music.load(track)
-            self.var.set(track)
+            self.var.set(str(track).split(".")[0])
             pygame.mixer.music.play()
             current_song = self.play_list.curselection()
             song = self.play_list.get(current_song)
@@ -225,7 +225,7 @@ class Player(ttk.Frame):
             self.play_list.select_clear(0, END)
             self.play_list.activate(next_one)
             self.play_list.selection_set(next_one, last=None)
-            self.var.set(song)
+            self.var.set(str(song).split(".")[0])
             self.play_list.see(next_one)
             self.get_time()
         except:
@@ -252,7 +252,7 @@ class Player(ttk.Frame):
             self.play_list.select_clear(0, END)
             self.play_list.activate(prev_one)
             self.play_list.selection_set(prev_one, last=None)
-            self.var.set(song)
+            self.var.set(str(song).split(".")[0])
             self.play_list.see(prev_one)
             self.get_time()
         except:
