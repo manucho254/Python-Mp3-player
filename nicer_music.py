@@ -84,17 +84,16 @@ class Player(ttk.Frame):
     def append_listbox(self):
         global NUMBER_OF_SONGS_IN_LIST
         try:
+            self.play_list.delete(0, 'end')
             directory = askdirectory()
             os.chdir(directory)# it permits to change the current dir
             song_list = os.listdir()
             song_list.sort()
             cleaned_list = [x for x in song_list if ".mp3" in x]
+            
             NUMBER_OF_SONGS_IN_LIST = len(cleaned_list) # getting the number of songs in array
-            for item in cleaned_list:# it returns the list of files song
-                pos = 0
-                self.play_list.insert(pos, item)
-                pos += 1
-                
+            self.play_list.insert(0, *song_list)
+            
             active_song_index = 0
             self.play_list.selection_set(active_song_index)
             self.play_list.see(active_song_index)
@@ -188,7 +187,6 @@ class Player(ttk.Frame):
 
     def stop(self):
         pygame.mixer.music.stop()
-        self.label_time.config(text=f"00:00:00 / 00:00:00")
         
     #====increase and decrease volume when slider is moved()==#
     
@@ -213,9 +211,14 @@ class Player(ttk.Frame):
     #===move to the next song===#
 
     def next_song(self):
+        global NUMBER_OF_SONGS_IN_LIST
+        
         try:
-            next_one = self.play_list.curselection()
-            next_one = next_one[0]+1
+            cursor_select = self.play_list.curselection()[0]
+            if int(cursor_select) == NUMBER_OF_SONGS_IN_LIST - 1:
+                next_one = 0
+            else:
+                next_one = cursor_select + 1
             song = self.play_list.get(next_one)
             pygame.mixer.music.load(song)
             pygame.mixer.music.play()
@@ -223,11 +226,11 @@ class Player(ttk.Frame):
             self.play_list.activate(next_one)
             self.play_list.selection_set(next_one, last=None)
             self.var.set(song)
-            self.get_time()
             self.play_list.see(next_one)
+            self.get_time()
         except:
-            print("cool")
-
+            showerror("No next Song", "Please press the Previous button")
+            
     def next(self):
         mythreads = threading.Thread(target=self.next_song)
         mythreads.start()
@@ -235,18 +238,23 @@ class Player(ttk.Frame):
     #===move to the previous song===#
 
     def prev_song(self):
+        global NUMBER_OF_SONGS_IN_LIST
+        
         try:
-            next_one = self.play_list.curselection()
-            next_one = next_one[0]-1
-            song = self.play_list.get(next_one)
+            cursor_select = self.play_list.curselection()[0]
+            if int(cursor_select) == 0:
+                prev_one = NUMBER_OF_SONGS_IN_LIST - 1
+            else:
+                prev_one = cursor_select - 1
+            song = self.play_list.get(prev_one)
             pygame.mixer.music.load(song)
             pygame.mixer.music.play()
             self.play_list.select_clear(0, END)
-            self.play_list.activate(next_one)
-            self.play_list.selection_set(next_one, last=None)
+            self.play_list.activate(prev_one)
+            self.play_list.selection_set(prev_one, last=None)
             self.var.set(song)
+            self.play_list.see(prev_one)
             self.get_time()
-            self.play_list.see(next_one)
         except:
             showerror("No previous Song", "Please press the Next button")
 
@@ -289,8 +297,6 @@ class Player(ttk.Frame):
                         font="Helvetica, 11", bg="black", fg="white")
             manual.pack(side=TOP, fill=BOTH)
             
-    def update_value(self, value):
-        self.setvar(f"{float(value):.0f}")
         
     def main_window(self):
         
@@ -303,16 +309,13 @@ class Player(ttk.Frame):
         self.master.config(menu=self.menu)
         self.menu.add_command(label="Help", command=self.help)
         self.menu.add_command(label="Exit", command=self.exit)
-
-        # self.separator = ttk.Separator(self.lab, orient='horizontal')
-        # self.separator.place(relx=0, rely=0.87, relwidth=1, relheight=1)
         
         self.button_play = Button(self.master, text=self.PLAY, width=5, bd=5, bg="black",
                             fg="white", font="Helvetica, 15", command=self.play_thread)
         self.button_play.place(x=150, y=423)
         
         self.button_prev = Button(self.master, text=self.FWD, width=5, bd=5,
-                            font="Helvetica, 15", bg="black", fg="white", command=next)
+                            font="Helvetica, 15", bg="black", fg="white", command=self.next)
         self.button_prev.place(x=300, y=423)
         
         self.button_next = Button(self.master, text=self.RWD, width=5, bd=5, bg="black",
