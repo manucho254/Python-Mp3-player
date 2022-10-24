@@ -78,6 +78,25 @@ class Player(ttk.Frame):
     def get_icon(self):
         winicon = PhotoImage(file="images/best.png")
         self.master.iconphoto(True, winicon)
+        
+        
+    def auto_load_music(self) -> None:
+        music_array = []
+        az = lambda: (chr(i)+":\\" for i in range(ord("A"), ord("Z") + 1))
+        for drv in az():
+            for root, dirs, files in os.walk(drv):
+                if type(files) == list:
+                    for i in files:
+                        if ".mp3" in i:
+                            if "C:\\Users\\user\\AppData" not in root and "\\env\\Lib\\site-packages\\pygame" not in root:
+                                music_array.append(f"{root}\{i}")
+                
+        self.play_list.insert(0, *music_array)
+        active_song_index = 0
+        self.play_list.selection_set(active_song_index)
+        self.play_list.see(active_song_index)
+        self.play_list.activate(active_song_index)
+        self.play_list.selection_anchor(active_song_index)
 
     # =====add a music list to the listbox======"
     
@@ -135,7 +154,8 @@ class Player(ttk.Frame):
             self.var.set(str(track).split(".")[0])
             pygame.mixer.music.play()
             self.get_time()
-        except:
+        except Exception as e:
+            print(e)
             showerror("No Music", "Please load the music you want to play")
         
     #==================update the playlist    
@@ -301,6 +321,7 @@ class Player(ttk.Frame):
     def main_window(self):
         
         self.get_icon()
+        self.auto_load_music()
         #==============================================================================================#
         #   THis part contains the menu, volume slider , music playlist label and the volume slider  #
         #===============================================================================================#
