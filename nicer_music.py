@@ -21,6 +21,7 @@ from mutagen.mp3 import MP3
 
 CURRENT_SONG_INDEX = 0
 NUMBER_OF_SONGS_IN_LIST = 0
+IMAGE_PATH = 'images/best.png'
 
 class Player(ttk.Frame):
     
@@ -51,8 +52,7 @@ class Player(ttk.Frame):
         self.scroll.config(command=self.play_list.yview)
         self.play_list.config(yscrollcommand=self.scroll.set)
         
-        files = 'images/best.png'
-        self.img1 = Image.open(files)
+        self.img1 = Image.open(IMAGE_PATH)
         self.img1 =  self.img1.resize((600, 470), Image.Resampling.LANCZOS)
         self.img = ImageTk.PhotoImage(self.img1)
         self.lab = Label(master)
@@ -76,27 +76,8 @@ class Player(ttk.Frame):
         
     #=====show an icon for the player===#
     def get_icon(self):
-        winicon = PhotoImage(file="images/best.png")
+        winicon = PhotoImage(file=IMAGE_PATH)
         self.master.iconphoto(True, winicon)
-        
-        
-    def auto_load_music(self) -> None:
-        music_array = []
-        az = lambda: (chr(i)+":\\" for i in range(ord("A"), ord("Z") + 1))
-        for drv in az():
-            for root, dirs, files in os.walk(drv):
-                if type(files) == list:
-                    for i in files:
-                        if ".mp3" in i:
-                            if "C:\\Users\\user\\AppData" not in root and "\\env\\Lib\\site-packages\\pygame" not in root:
-                                music_array.append(f"{root}\{i}")
-                
-        self.play_list.insert(0, *music_array)
-        active_song_index = 0
-        self.play_list.selection_set(active_song_index)
-        self.play_list.see(active_song_index)
-        self.play_list.activate(active_song_index)
-        self.play_list.selection_anchor(active_song_index)
 
     # =====add a music list to the listbox======"
     
@@ -211,7 +192,7 @@ class Player(ttk.Frame):
     #====increase and decrease volume when slider is moved()==#
     
 
-    def volume(self, x):
+    def volume(self, *args):
         pygame.mixer.music.set_volume(self.volume_slider.get())
         
     # ====mute and unmute the song while the song plays== #
@@ -321,7 +302,6 @@ class Player(ttk.Frame):
     def main_window(self):
         
         self.get_icon()
-        self.auto_load_music()
         #==============================================================================================#
         #   THis part contains the menu, volume slider , music playlist label and the volume slider  #
         #===============================================================================================#
@@ -347,12 +327,12 @@ class Player(ttk.Frame):
                             font="Helvetica, 15", bg="black", fg="white", command=self.stop)
         self.button_stop.place(x=225, y=423)
         
-        self.buttonPlayall = Button(
+        self.button_play_all = Button(
             self.master, text='\U0001F500' , 
             bg='black', fg='white', font='Helvetica, 15' , bd=5,
             width=3,
             command=self.play_all)
-        self.buttonPlayall.place(x=375, y=423)
+        self.button_play_all.place(x=375, y=423)
 
         self.button_pause = Button(self.master, text=self.PAUSE, width=4, bd=5,
                             font="Helvetica, 15", bg="black", fg="white", command=self.pause_unpause)
@@ -395,7 +375,7 @@ class Player(ttk.Frame):
 
 def main():
     root = Tk()
-    playerapp = Player(root).main_window()
+    Player(root).main_window()
     root.geometry("963x470+200+100")
     root.title("Mp3 Music Player")
     root.configure(bg="#E5E4E2")
